@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>상품등록 · SCM Sample</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="topbar app">
+  <a class="logo" href="board.html" style="color:inherit"><b>S</b> SCM</a>
+  <nav><a href="board.html" >게시판</a><a href="product.html" class="active">상품등록</a></nav>
+  <button class="btn btn-sm btn-ghost" data-theme-toggle type="button"></button>
+  <button class="btn btn-sm" data-logout type="button">로그아웃</button>
+  <span class="avatar" aria-hidden="true">?</span>
+</header>
+<main class="container">
+  <div class="page-head"><div><h1>상품 등록</h1><p>이미지·가격·태그를 입력하면 오른쪽에서 실시간으로 확인할 수 있어요.</p></div></div>
+  <form id="productForm" novalidate>
+  <div class="product-grid">
+    <div style="display:grid;gap:20px">
+      <section class="card"><h2>기본 정보</h2>
+        <div class="field"><input name="name" placeholder=" " maxlength="60"><label>상품명</label><span class="msg"></span></div>
+        <div class="field"><select name="category"><option value="">선택하세요</option><option>의류</option><option>식품</option><option>전자기기</option><option>생활용품</option><option>뷰티</option></select><label>카테고리</label><span class="msg"></span></div>
+        <div class="field"><textarea name="desc" placeholder=" "></textarea><label>상품 설명</label><span class="msg"></span></div>
+        <div class="tags" id="tagBox"><input id="tagInput" placeholder="태그 입력 후 Enter (최대 8개)" aria-label="태그"></div>
+      </section>
+      <section class="card"><h2>가격 · 재고</h2>
+        <div class="row">
+          <div class="field"><input name="price" type="number" min="0" placeholder=" "><label>판매가</label><span class="suffix">원</span><span class="msg"></span></div>
+          <div class="field"><input name="discount" type="number" min="0" max="90" placeholder=" "><label>할인율</label><span class="suffix">%</span></div>
+        </div>
+        <div class="field"><input name="stock" type="number" min="0" placeholder=" "><label>재고 수량</label><span class="suffix">개</span><span class="msg"></span></div>
+        <div class="toggle-row"><div><b>품절 처리</b><br><small style="color:var(--muted)">켜면 구매할 수 없습니다.</small></div><label class="switch"><input type="checkbox" name="soldout"><i></i></label></div>
+      </section>
+      <section class="card"><h2>상품 이미지 <small id="imgCount" style="color:var(--muted);font-weight:400">0/5</small></h2>
+        <div class="dropzone" id="dropzone" tabindex="0" role="button">📷 이미지를 드래그하거나 클릭해서 업로드<br><small>JPG·PNG, 장당 3MB 이하 · 첫 번째가 대표 이미지</small></div>
+        <input type="file" id="files" accept="image/*" multiple hidden>
+        <div class="thumbs" id="thumbs"></div>
+      </section>
+      <div class="actions"><button class="btn" type="button" id="draftBtn">임시저장</button><button class="btn btn-primary" type="submit">상품 등록</button></div>
+    </div>
+    <aside class="card preview"><h2>미리보기</h2>
+      <div class="pimg" id="pvImg">🖼️</div>
+      <b id="pvName"></b>
+      <div class="price" id="pvPrice">—</div>
+      <small id="pvStatus" style="color:var(--muted)"></small>
+      <div id="pvTags" style="margin-top:8px"></div>
+    </aside>
+  </div></form>
+</main>
+<script src="js/common.js"></script><script src="js/product.js"></script>
+</body></html>

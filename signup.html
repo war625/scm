@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>회원가입 · SCM Sample</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<button class="btn btn-sm btn-ghost theme-fab" data-theme-toggle type="button"></button>
+<div class="auth">
+  <aside class="auth-hero"><div class="logo"><b>S</b> SCM</div><div><h2>데이터를 연결하고,<br>업무를 더 스마트하게.</h2><p>상품·재고·커뮤니티를 하나의 워크스페이스에서 관리하세요.</p></div><small>© 2026 SCM Sample</small></aside>
+  <main class="auth-main">
+    <section class="auth-card">
+      <h1>계정 만들기 ✨</h1>
+      <p class="sub">1분이면 가입할 수 있어요. <span id="stepLabel"></span></p>
+      <div class="steps"><span></span><span></span></div>
+      <form id="signupForm" novalidate>
+        <div class="pane">
+          <div class="field"><input name="name" placeholder=" " autocomplete="name"><label>이름</label><span class="msg"></span></div>
+          <div class="field"><input name="email" type="email" placeholder=" " autocomplete="email"><label>이메일</label><span class="msg"></span></div>
+          <div class="field"><input name="password" type="password" placeholder=" " autocomplete="new-password"><label>비밀번호</label><button type="button" class="eye" aria-label="비밀번호 표시">👁️</button><span class="msg"></span></div>
+          <div class="meter"><i></i><i></i><i></i><i></i></div><div class="meter-text">8자 이상, 영문+숫자 조합</div>
+          <div class="field"><input name="password2" type="password" placeholder=" " autocomplete="new-password"><label>비밀번호 확인</label><span class="msg"></span></div>
+          <button class="btn btn-primary btn-block" type="button" id="toStep2">다음</button>
+        </div>
+        <div class="pane" hidden>
+          <div class="field"><input name="phone" inputmode="numeric" placeholder=" " autocomplete="tel"><label>휴대폰 (선택)</label><span class="msg"></span></div>
+          <label class="check"><input type="checkbox" id="agreeAll"> <b>전체 동의</b></label>
+          <label class="check"><input type="checkbox" class="agree" required> [필수] 이용약관 동의</label>
+          <label class="check"><input type="checkbox" class="agree" required> [필수] 개인정보 수집·이용 동의</label>
+          <label class="check"><input type="checkbox" class="agree"> [선택] 마케팅 정보 수신 동의</label>
+          <div class="row" style="margin-top:14px"><button class="btn" type="button" id="toStep1">이전</button><button class="btn btn-primary" type="submit">가입하기</button></div>
+        </div>
+      </form>
+      <p class="foot">이미 계정이 있나요? <a href="login.html">로그인</a></p>
+    </section>
+  </main>
+</div>
+<script src="js/common.js"></script><script src="js/auth.js"></script>
+</body></html>

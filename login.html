@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>로그인 · SCM Sample</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<button class="btn btn-sm btn-ghost theme-fab" data-theme-toggle type="button"></button>
+<div class="auth">
+  <aside class="auth-hero"><div class="logo"><b>S</b> SCM</div><div><h2>데이터를 연결하고,<br>업무를 더 스마트하게.</h2><p>상품·재고·커뮤니티를 하나의 워크스페이스에서 관리하세요.</p></div><small>© 2026 SCM Sample</small></aside>
+  <main class="auth-main">
+    <section class="auth-card">
+      <h1>다시 오신 걸 환영해요 👋</h1>
+      <p class="sub">계정에 로그인하세요.</p>
+      <form id="loginForm" novalidate>
+        <div class="field"><input name="email" type="email" placeholder=" " autocomplete="email"><label>이메일</label><span class="msg"></span></div>
+        <div class="field"><input name="password" type="password" placeholder=" " autocomplete="current-password"><label>비밀번호</label><button type="button" class="eye" aria-label="비밀번호 표시">👁️</button><span class="msg"></span></div>
+        <div class="between" style="margin-bottom:18px"><label class="check" style="margin:0"><input type="checkbox" name="remember"> 로그인 유지</label><a href="#" onclick="App.toast('샘플에서는 지원하지 않습니다.','error');return false">비밀번호 찾기</a></div>
+        <button class="btn btn-primary btn-block" type="submit">로그인</button>
+        <button class="btn btn-ghost btn-block" type="button" id="demoFill" style="margin-top:8px">데모 계정 자동 입력</button>
+      </form>
+      <div class="divider">또는</div>
+      <div class="social">
+        <button class="btn" type="button" onclick="App.toast('소셜 로그인은 샘플입니다.','error')">Google</button>
+        <button class="btn" type="button" onclick="App.toast('소셜 로그인은 샘플입니다.','error')">Kakao</button>
+        <button class="btn" type="button" onclick="App.toast('소셜 로그인은 샘플입니다.','error')">Naver</button>
+      </div>
+      <p class="foot">계정이 없나요? <a href="signup.html">회원가입</a></p>
+    </section>
+  </main>
+</div>
+<script src="js/common.js"></script><script src="js/auth.js"></script>
+</body></html>
