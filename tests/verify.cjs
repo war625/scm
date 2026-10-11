@@ -41,6 +41,18 @@ const srv = http.createServer((q, r) => {
     return msg.includes('이미') ? null : `상품명 오류 메시지에 '이미' 없음 (현재: "${msg}")`;
   });
 
+  await test('R4', '할인율 90 초과는 90으로 보정, 음수는 비움, 저장·미리보기에 반영', async () => {
+    await open(); await fill({ name: 'Discount Item', price: '10000' });
+    await page.fill('[name=discount]', '95');
+    const v = await page.inputValue('[name=discount]'); if (v !== '90') return `95 입력 시 값이 ${JSON.stringify(v)} (기대 "90")`;
+    const pv = await page.innerText('#pvPrice'); if (!pv.includes('1,000')) return `미리보기 최종가가 1,000원이 아님 (현재: "${pv.replace(/\s+/g, ' ')}")`;
+    await page.fill('[name=discount]', '-5');
+    const n = await page.inputValue('[name=discount]'); if (n !== '') return `-5 입력 시 값이 ${JSON.stringify(n)} (기대 "")`;
+    await page.fill('[name=discount]', '95'); await submit();
+    const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('products') || '[]').find(p => p.name === 'Discount Item'));
+    return saved && saved.discount === 90 ? null : `저장된 할인율이 ${saved ? saved.discount : '(저장 안 됨)'} (기대 90)`;
+  });
+
   await browser.close(); srv.close();
   for (const [id, ok, d, m] of results) console.log(`${ok ? 'PASS' : 'FAIL'} ${id} ${d}${ok ? '' : '  → ' + m}`);
   process.exit(results.every(r => r[1]) ? 0 : 1);
