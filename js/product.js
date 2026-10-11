@@ -28,7 +28,8 @@
       if (!x.type.startsWith('image/')) { toast('이미지 파일만 가능합니다.', 'error'); continue; }
       if (x.size > MAX_MB * 1048576) { toast(`${x.name}: ${MAX_MB}MB 이하만 가능합니다.`, 'error'); continue; }
       if (images.length >= MAX_IMG) { toast(`이미지는 최대 ${MAX_IMG}장입니다.`, 'error'); break; }
-      images.push({ name: x.name, url: URL.createObjectURL(x) });
+      if (images.some(im => im.name === x.name && im.size === x.size)) { toast(`${x.name}: 이미 등록된 이미지입니다.`, 'error'); continue; }
+      images.push({ name: x.name, size: x.size, url: URL.createObjectURL(x) });
     }
     paintImages();
   }
@@ -75,6 +76,12 @@
     e.preventDefault();
     if (!checks.map(c => c()).every(Boolean)) { toast('필수 항목을 확인해주세요.', 'error'); return $('.invalid input, .invalid select, .invalid textarea')?.focus(); }
     if (!images.length) return toast('대표 이미지를 1장 이상 등록해주세요.', 'error');
+    const norm = s => s.trim().toLowerCase();
+    if ((await Api.products()).some(x => norm(x.name) === norm(f.name.value))) {
+      const w = f.name.closest('.field'); w.classList.add('invalid'); w.classList.remove('valid');
+      w.querySelector('.msg').textContent = '이미 등록된 상품명입니다.';
+      return toast('이미 등록된 상품명입니다.', 'error');
+    }
     const btn = $('button[type=submit]', f); setLoading(btn, true, '등록 중...');
     await Api.addProduct(data()); saved = true; localStorage.removeItem('productDraft');
     toast('상품이 등록되었습니다 🎉'); setLoading(btn, false);
