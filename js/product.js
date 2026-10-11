@@ -28,7 +28,8 @@
       if (!x.type.startsWith('image/')) { toast('이미지 파일만 가능합니다.', 'error'); continue; }
       if (x.size > MAX_MB * 1048576) { toast(`${x.name}: ${MAX_MB}MB 이하만 가능합니다.`, 'error'); continue; }
       if (images.length >= MAX_IMG) { toast(`이미지는 최대 ${MAX_IMG}장입니다.`, 'error'); break; }
-      images.push({ name: x.name, url: URL.createObjectURL(x) });
+      if (images.some(im => im.name === x.name && im.size === x.size)) { toast(`${x.name}: 이미 등록된 이미지입니다.`, 'error'); continue; }
+      images.push({ name: x.name, size: x.size, url: URL.createObjectURL(x) });
     }
     paintImages();
   }
