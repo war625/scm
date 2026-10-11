@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>비밀번호재설정 · SCM Sample</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<button class="btn btn-sm btn-ghost theme-fab" data-theme-toggle type="button"></button>
+<div class="auth">
+  <aside class="auth-hero"><div class="logo"><b>S</b> SCM</div><div><h2>데이터를 연결하고,<br>업무를 더 스마트하게.</h2><p>외부 업체 BP·상품 등록을 하나의 워크스페이스에서 관리하세요.</p></div><small>© 2026 SCM Sample</small></aside>
+  <main class="auth-main">
+    <section class="auth-card">
+      <h1>비밀번호 재설정 🔐</h1>
+      <p class="sub" id="rsSub">가입한 아이디와 담당자 이메일을 입력하세요.</p>
+      <div class="steps"><span></span><span></span><span></span></div>
+      <form id="resetForm" novalidate>
+        <div class="pane">
+          <div class="field"><input name="loginId" placeholder=" " autocapitalize="none"><label>아이디</label><span class="msg"></span></div>
+          <div class="field"><input name="email" type="email" placeholder=" "><label>담당자 이메일</label><span class="msg"></span></div>
+          <button class="btn btn-primary btn-block" type="button" id="rsFind">다음</button>
+        </div>
+        <div class="pane" hidden>
+          <div class="row" style="margin-bottom:14px"><label class="check" style="margin:0"><input type="radio" name="channel" value="이메일" checked> 이메일</label><label class="check" style="margin:0"><input type="radio" name="channel" value="SMS"> SMS</label></div>
+          <p class="hint" id="rsTarget"></p>
+          <button class="btn btn-block" type="button" id="rsSend" style="margin-bottom:14px">인증번호 받기</button>
+          <div class="field has-btn" id="rsCodeRow" hidden><input name="code" inputmode="numeric" maxlength="6" placeholder=" "><label>인증번호 6자리 <span class="timer" id="rsTimer"></span></label><button type="button" class="btn btn-sm inline-btn" id="rsVerify">확인</button><span class="msg"></span></div>
+        </div>
+        <div class="pane" hidden>
+          <div class="field"><input name="password" type="password" placeholder=" " autocomplete="new-password"><label>새 비밀번호</label><button type="button" class="eye" aria-label="비밀번호 표시">👁️</button><span class="msg"></span></div>
+          <div class="meter"><i></i><i></i><i></i><i></i></div><div class="meter-text">8자 이상, 영문+숫자 조합</div>
+          <div class="field"><input name="password2" type="password" placeholder=" " autocomplete="new-password"><label>새 비밀번호 확인</label><span class="msg"></span></div>
+          <button class="btn btn-primary btn-block" type="submit">변경하기</button>
+          <p class="hint" style="margin-top:10px">잠긴 계정도 변경 즉시 잠금이 해제됩니다.</p>
+        </div>
+      </form>
+      <p class="foot"><a href="login.html">← 로그인으로 돌아가기</a></p>
+    </section>
+  </main>
+</div>
+<script src="js/common.js"></script><script src="js/reset.js"></script>
+</body></html>
