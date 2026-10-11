@@ -1,0 +1,59 @@
+/* ExtJS(Triton) 스킨: 사이트 디자인 토큰(색/폰트)에 맞추고 다크모드를 지원 */
+.x-body,.x-btn-inner,.x-form-field,.x-form-item-label-text,.x-grid-cell-inner,.x-column-header-text-inner,.x-panel-header-title-default,.x-window-header-title-default,
+.x-field,.x-toolbar-text,.x-boundlist-item,.x-fieldset-header-text,.x-form-display-field,.x-tip-body,.x-message-box-text{font-family:var(--font)!important}
+.x-body{background:var(--bg);color:var(--text)}
+.x-panel-header-default,.x-window-header-default{background:linear-gradient(135deg,var(--primary),var(--primary-2))!important;border-color:var(--primary)!important}
+.x-panel-default,.x-window-default{border-color:var(--border)}
+.x-btn-default-small,.x-btn-default-medium{background:var(--primary)!important;border-color:var(--primary)!important}
+.x-btn-default-small.x-btn-over,.x-btn-default-medium.x-btn-over{background:var(--primary-2)!important;border-color:var(--primary-2)!important}
+.x-btn-default-small .x-btn-inner,.x-btn-default-medium .x-btn-inner{color:#fff!important}
+.x-btn.btn-danger{background:var(--danger)!important;border-color:var(--danger)!important}
+.x-btn.btn-ghost{background:var(--surface)!important;border-color:var(--border)!important}
+.x-btn.btn-ghost .x-btn-inner{color:var(--text)!important}
+.x-form-item-label-top .x-form-item-label-text,.x-form-item-label-text{color:var(--muted);font-weight:600}
+.x-form-required-field .x-form-item-label-text::after{color:var(--danger)}
+.x-fieldset{border-color:var(--border);border-radius:12px;padding:6px 14px 8px}
+.x-fieldset-header-text{font-weight:700;color:var(--text)}
+.x-grid-item-over .x-grid-cell{background:var(--primary-soft)!important}
+.x-grid-row-selected .x-grid-cell,.x-grid-item-selected .x-grid-cell{background:var(--primary-soft)!important}
+.x-grid-cell-inner{line-height:22px}
+.x-column-header-text-inner{font-weight:700}
+.ext-host{width:100%}
+.ext-host .st{font-size:.72rem}
+.ext-host .pcell{padding:4px 0}
+.ext-host .pcell b{font-size:.92rem}
+.x-window .section-h:first-child{margin-top:0}
+.x-window .dl{font-size:.88rem}
+.x-window .reasons{margin:4px 0 0}
+
+/* 다크모드 */
+[data-theme="dark"] .x-body{background:var(--bg);color:var(--text)}
+[data-theme="dark"] .x-panel-body-default,[data-theme="dark"] .x-window-body-default,[data-theme="dark"] .x-grid-item,[data-theme="dark"] .x-grid-cell,[data-theme="dark"] .x-grid-view,
+[data-theme="dark"] .x-docked,[data-theme="dark"] .x-toolbar-default,[data-theme="dark"] .x-fieldset,[data-theme="dark"] .x-panel-body-default .x-container,[data-theme="dark"] .x-component{background-color:var(--surface);color:var(--text);border-color:var(--border)}
+[data-theme="dark"] .x-grid-item-alt .x-grid-cell{background-color:var(--surface-2)}
+[data-theme="dark"] .x-grid-header-ct,[data-theme="dark"] .x-column-header,[data-theme="dark"] .x-column-header-inner{background:var(--surface-2)!important;border-color:var(--border)}
+[data-theme="dark"] .x-column-header-text-inner,[data-theme="dark"] .x-grid-cell-inner,[data-theme="dark"] .x-toolbar-text,[data-theme="dark"] .x-btn-inner{color:var(--text)}
+[data-theme="dark"] .x-form-text-default,[data-theme="dark"] .x-form-textarea,[data-theme="dark"] .x-form-trigger-wrap-default,[data-theme="dark"] .x-form-file-wrap,[data-theme="dark"] .x-form-text-wrap-default{background:var(--surface-2)!important;color:var(--text)!important;border-color:var(--border)!important}
+[data-theme="dark"] .x-boundlist,[data-theme="dark"] .x-boundlist-item{background:var(--surface);color:var(--text);border-color:var(--border)}
+[data-theme="dark"] .x-boundlist-item-over,[data-theme="dark"] .x-boundlist-selected{background:var(--primary-soft)}
+[data-theme="dark"] .x-toolbar-default .x-btn-default-toolbar-small .x-btn-inner{color:var(--text)}
+[data-theme="dark"] .x-mask{background:rgba(0,0,0,.5)}
+[data-theme="dark"] .x-window-default{border-color:var(--border);background:var(--surface)}
+[data-theme="dark"] .x-btn.btn-ghost .x-btn-inner{color:var(--text)!important}
+[data-theme="dark"] .x-tool-img{filter:invert(.85)}
+[data-theme="dark"] .x-grid-empty{color:var(--muted)}
+
+/* ExtJS 기본 리셋과 충돌하는 페이지 제목 보정 */
+.page-head h1{margin:0 0 4px;line-height:1.3;font-size:1.65rem}
+.page-head p{margin:0;line-height:1.5}
+/* 상단 툴바의 주요 버튼(등록/승인)은 포인트 색, 페이징 버튼은 중립색 */
+.x-toolbar-docked-top .x-btn-default-toolbar-small{background:var(--primary)!important;border-color:var(--primary)!important}
+.x-toolbar-docked-top .x-btn-default-toolbar-small.x-btn-over{background:var(--primary-2)!important}
+.x-toolbar-docked-top .x-btn-default-toolbar-small .x-btn-inner{color:#fff!important}
+.x-toolbar-docked-top .x-btn-default-toolbar-small.x-btn-disabled{opacity:.45}
+[data-theme="dark"] .x-toolbar-docked-bottom .x-btn-default-toolbar-small{background:var(--surface-2)!important;border-color:var(--border)!important}
+[data-theme="dark"] .x-form-trigger-default,[data-theme="dark"] .x-form-trigger{background-color:var(--surface-2)!important;border-color:var(--border)!important}
+[data-theme="dark"] .x-form-arrow-trigger-default{background-color:var(--surface-2)!important}
+[data-theme="dark"] .x-form-text-field-body-default{background:transparent}
+[data-theme="dark"] .x-tbar-page-first,[data-theme="dark"] .x-tbar-page-prev,[data-theme="dark"] .x-tbar-page-next,[data-theme="dark"] .x-tbar-page-last,[data-theme="dark"] .x-tbar-loading{filter:none;color:var(--text)}
+@media(max-width:560px){.topbar nav a{padding:8px 6px;font-size:.84rem}.x-fieldset{padding:4px 8px 6px}}

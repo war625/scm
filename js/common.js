@@ -159,7 +159,7 @@
       }
       if (m.status === 'pending') throw Object.assign(new Error('가입 승인 대기 중입니다. 승인 완료 후 SMS로 안내드립니다.'), { code: 'PENDING' });
       if (m.status === 'rejected') throw Object.assign(new Error('가입이 반려되었습니다.' + (m.rejectReason ? ` 사유: ${m.rejectReason}` : '')), { code: 'REJECTED' });
-      m.failCount = 0; saveMembers(list);
+      m.failCount = 0; saveMembers(list); Api.ensureSeed();
       sessionStorage.setItem('session', JSON.stringify(publicInfo(m)));
       return publicInfo(m);
     },
@@ -213,8 +213,74 @@
     async posts() { await sleep(500); let p = read('posts', null); if (!p) { p = seedPosts(); write('posts', p); } return p; },
     async savePosts(p) { write('posts', p); },
     async products() { await sleep(200); return read('products', []); },
-    async addProduct(p) { await sleep(900); const l = read('products', []); l.unshift({ ...p, id: Date.now() }); write('products', l); return p; }
+    async addProduct(p, who) { return Api.saveProduct(p, who); },
+
+    // --- BP / 상품 등록 워크플로우 (임시저장 → 승인요청 → MDM W/F 승인·반려) ---
+    // 실제 환경: 승인 화면·로직은 MDM W/F 사용. 여기서는 상태/이력/MDM코드 발급을 흉내낸다.
+    ensureSeed() { if (!localStorage.getItem('seedWf')) { seedWorkflow(); localStorage.setItem('seedWf', '1'); } },
+    async bps() { await sleep(300); return read('bps', []); },
+    async saveBp(bp, who, submit) {
+      await sleep(700);
+      const l = read('bps', []), now = Date.now(), status = submit ? 'requested' : 'draft';
+      const note = submit ? (bp.id && bp.code ? '변경 재승인 요청' : '승인 요청') : '임시저장';
+      const i = bp.id ? l.findIndex(x => x.id === bp.id) : -1;
+      if (i >= 0) l[i] = { ...l[i], ...bp, status, rejectReason: '', updatedAt: now, history: [...l[i].history, { at: now, by: who.name, status, note }] };
+      else l.unshift({ ...bp, id: now, owner: who.id, ownerName: who.company, status, createdAt: now, updatedAt: now, history: [{ at: now, by: who.name, status, note }] });
+      write('bps', l); return i >= 0 ? l[i] : l[0];
+    },
+    async deleteBp(id) { await sleep(400); write('bps', read('bps', []).filter(x => x.id !== id)); },
+    async bpBizDup(bizNo, exceptId) { await sleep(700); if (!validBiz(bizNo)) throw new Error('유효하지 않은 사업자등록번호입니다.'); if (read('bps', []).some(b => b.id !== exceptId && b.bizNo === fmtBiz(bizNo))) throw new Error('이미 등록된 거래처(사업자번호)입니다.'); return { status: '계속사업자' }; },
+    async saveProduct(p, who) {
+      await sleep(900);
+      const l = read('products', []), now = Date.now();
+      who = who || {};
+      const i = p.id ? l.findIndex(x => x.id === p.id) : -1;
+      if (i >= 0) l[i] = { ...l[i], ...p, status: 'requested', rejectReason: '', updatedAt: now, history: [...(l[i].history || []), { at: now, by: who.name, status: 'requested', note: l[i].status === 'approved' ? '변경 재승인 요청' : '승인 요청' }] };
+      else l.unshift({ ...p, id: now, owner: who.id, ownerName: who.company, status: 'requested', createdAt: now, updatedAt: now, history: [{ at: now, by: who.name, status: 'requested', note: '승인 요청' }] });
+      write('products', l); return p;
+    },
+    async deleteProduct(id) { await sleep(400); write('products', read('products', []).filter(x => x.id !== id)); },
+    async decideItems(kind, ids, status, reason, adminName) {
+      await sleep(700);
+      const key = kind === 'bp' ? 'bps' : 'products', l = read(key, []), now = Date.now(), done = [], seq = read('seq', { bp: 100000, product: 200000 });
+      ids.forEach(id => {
+        const it = l.find(x => x.id === id); if (!it || it.status !== 'requested') return;
+        it.status = status; it.rejectReason = status === 'rejected' ? reason : '';
+        if (status === 'approved' && !it.code) it.code = (kind === 'bp' ? 'BP-' : 'SKU-') + String(++seq[kind]).padStart(6, '0');
+        it.history.push({ at: now, by: adminName, status, note: status === 'approved' ? `승인 · MDM 전송 완료 (${it.code})` : `반려: ${reason}` });
+        it.updatedAt = now; done.push(it);
+        const m = find(it.owner), label = kind === 'bp' ? `거래처 '${it.name}'` : `상품 '${it.name}'`;
+        if (m) { const sms = m.agree && m.agree.sms; Api.addNotice({ to: sms ? m.manager.phone : m.manager.email, channel: sms ? 'SMS' : '이메일', text: status === 'approved' ? `[SCM] ${label} 등록이 승인되었습니다. (${it.code})` : `[SCM] ${label} 등록이 반려되었습니다. 사유: ${reason}` }); }
+      });
+      write(key, l); write('seq', seq); return done;
+    }
   };
+
+  // 승인 워크플로우 샘플 데이터 (최초 1회, 로그인/목록 화면에서만 채운다)
+  function seedWorkflow() {
+    const now = Date.now(), day = 864e5, biz = n => { const b = String(n).padStart(9, '0'); return fmtBiz(b + bizCheckDigit(b)); };
+    const h = (status, daysAgo, note) => [{ at: now - (daysAgo + 1) * day, by: '담당자', status: 'requested', note: '승인 요청' }, ...(status === 'approved' ? [{ at: now - daysAgo * day, by: '관리자', status, note: note || '승인 · MDM 전송 완료' }] : status === 'rejected' ? [{ at: now - daysAgo * day, by: '관리자', status, note: `반려: ${note}` }] : [])];
+    const bp = (id, owner, ownerName, name, n, type, status, daysAgo, extra = {}) => ({
+      id: now - id, owner, ownerName, name, bizNo: biz(n), ceo: '대표' + id, tradeType: type, industry: '도소매', address: '서울특별시 강남구 테헤란로 ' + (100 + id),
+      contact: { name: '김담당', phone: '010-1234-' + String(1000 + id), email: `bp${id}@example.com` }, bank: { name: '국민은행', account: '123456-01-' + String(100000 + id), holder: name },
+      docs: { bizLicense: { name: `사업자등록증_${name}.pdf`, size: 300000 }, bankbook: null }, status, rejectReason: extra.rejectReason || '', code: status === 'approved' ? 'BP-' + (100000 + id) : '',
+      history: status === 'draft' ? [{ at: now - daysAgo * day, by: '담당자', status: 'draft', note: '임시저장' }] : h(status, daysAgo, extra.rejectReason), createdAt: now - (daysAgo + 1) * day, updatedAt: now - daysAgo * day });
+    write('bps', [
+      bp(1, 'demo', '데모상사', '(주)한강유통', 410100101, '매입처', 'approved', 20), bp(2, 'demo', '데모상사', '동서식품상사', 420200202, '양방향', 'requested', 1),
+      bp(3, 'demo', '데모상사', '서울물류센터', 430300303, '매출처', 'rejected', 6, { rejectReason: '사업자등록증과 대표자명이 일치하지 않습니다.' }), bp(4, 'demo', '데모상사', '신규 협력사(작성중)', 440400404, '매입처', 'draft', 0),
+      bp(5, 'chungsol', '청솔식품', '청정푸드(주)', 450500505, '매입처', 'approved', 12), bp(6, 'chungsol', '청솔식품', '대한제과', 460600606, '매출처', 'requested', 2), ...read('bps', [])]);
+    const pr = (id, owner, ownerName, name, cat, price, disc, stock, status, daysAgo, tags, rejectReason) => ({
+      id: now - 5000 - id, owner, ownerName, name, category: cat, price, discount: disc, stock, desc: `${name} 상품 설명입니다. 샘플 데이터이며 실제 서비스에서는 MDM에서 연동됩니다.`, soldout: false, tags, images: [],
+      status, rejectReason: rejectReason || '', code: status === 'approved' ? 'SKU-' + (200000 + id) : '', history: h(status, daysAgo, rejectReason), createdAt: now - (daysAgo + 1) * day, updatedAt: now - daysAgo * day });
+    write('products', [
+      ...read('products', []),
+      pr(1, 'demo', '데모상사', '유기농 현미 5kg', '식품', 32000, 10, 120, 'approved', 15, ['유기농', '쌀']), pr(2, 'demo', '데모상사', '프리미엄 올리브오일 500ml', '식품', 18900, 0, 45, 'approved', 10, ['오일']),
+      pr(3, 'demo', '데모상사', '무선 청소기 X1', '전자기기', 249000, 15, 12, 'requested', 1, ['청소기']), pr(4, 'demo', '데모상사', '대나무 칫솔 10입', '생활용품', 8900, 0, 300, 'requested', 2, ['친환경']),
+      pr(5, 'demo', '데모상사', '수분 앰플 30ml', '뷰티', 27000, 20, 0, 'rejected', 5, ['앰플'], '상품 설명에 효능 과장 표현이 포함되어 있습니다.'), pr(6, 'demo', '데모상사', '여름 린넨 셔츠', '의류', 45000, 0, 60, 'approved', 8, ['린넨']),
+      pr(7, 'chungsol', '청솔식품', '청솔 참기름 320ml', '식품', 12500, 0, 220, 'approved', 9, ['참기름']), pr(8, 'chungsol', '청솔식품', '국산 들깨가루 500g', '식품', 15800, 5, 80, 'requested', 1, ['들깨']),
+      pr(9, 'chungsol', '청솔식품', '선물세트 A', '식품', 39000, 0, 30, 'requested', 3, ['선물'])]);
+    write('seq', { bp: 100100, product: 200100 });
+  }
 
   // ---------- 폼 검증 헬퍼 ----------
   const Rules = {
@@ -263,16 +329,17 @@
 
   // ---------- 상단바 (역할별 메뉴) ----------
   const MENUS = {
-    vendor: [['board.html', '게시판'], ['product.html', '상품등록'], ['profile.html', '내정보']],
-    admin: [['admin-members.html', '가입승인'], ['board.html', '게시판'], ['profile.html', '내정보']]
+    vendor: [['bp-list.html', 'BP'], ['product-list.html', '상품'], ['board.html', '게시판'], ['profile.html', '내정보']],
+    admin: [['admin-approvals.html', '승인요청'], ['admin-members.html', '가입승인'], ['bp-list.html', 'BP'], ['product-list.html', '상품'], ['board.html', '게시판'], ['profile.html', '내정보']]
   };
+  const SUBPAGES = { 'bp-list.html': ['bp-form.html'], 'product-list.html': ['product.html'] };
   function renderTopbar(s) {
     const bar = $('#topbar'); if (!bar) return;
     const role = s.role === 'admin' ? 'admin' : 'vendor';
     const here = location.pathname.split('/').pop() || 'index.html';
     bar.className = 'topbar app';
     bar.innerHTML = `<a class="logo" href="${MENUS[role][0][0]}" style="color:inherit"><b>S</b> SCM</a>
-      <nav>${MENUS[role].map(([h, t]) => `<a href="${h}"${h === here ? ' class="active"' : ''}>${t}</a>`).join('')}</nav>
+      <nav>${MENUS[role].map(([h, t]) => `<a href="${h}"${h === here || (SUBPAGES[h] || []).includes(here) ? ' class="active"' : ''}>${t}</a>`).join('')}</nav>
       ${role === 'admin' ? '<span class="st st-approved" title="관리자 계정">관리자</span>' : ''}
       <button class="btn btn-sm btn-ghost" data-theme-toggle type="button"></button>
       <button class="btn btn-sm" data-logout type="button">로그아웃</button>
@@ -288,7 +355,7 @@
     const role = s.role === 'admin' ? 'admin' : 'vendor';
     if (opts.roles && !opts.roles.includes(role)) { location.replace(MENUS[role][0][0]); return null; }
     renderTopbar(s);
-    return { ...s, role };
+    return { ...s, role, id: s.id || s.email, company: s.company || '' };
   }
 
   document.addEventListener('DOMContentLoaded', () => { bindTheme(); bindEyes(); });
