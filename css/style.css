@@ -67,9 +67,6 @@ button,input,select,textarea{font:inherit;color:inherit}
 @keyframes rise{from{opacity:0;transform:translateY(14px)}}
 .auth-card h1{font-size:1.7rem;letter-spacing:-.02em}
 .auth-card .sub{color:var(--muted);margin:6px 0 24px}
-.divider{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:.8rem;margin:20px 0}
-.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--border)}
-.social{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .between{display:flex;justify-content:space-between;align-items:center;font-size:.9rem}
 .foot{text-align:center;margin-top:22px;color:var(--muted);font-size:.92rem}
 .theme-fab{position:fixed;top:16px;right:16px;z-index:50}
