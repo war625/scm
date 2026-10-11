@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>내정보 · SCM Sample</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header id="topbar"></header>
+<main class="container narrow">
+  <div class="page-head"><div><h1>내정보</h1><p>업체·담당자 정보와 보안 설정을 변경할 수 있어요.</p></div><span class="st" id="myStatus"></span></div>
+  <div style="display:grid;gap:20px">
+
+    <section class="card"><h2>계정</h2>
+      <dl class="dl"><dt>아이디</dt><dd id="pId"></dd><dt>가입일</dt><dd id="pDate"></dd><dt>권한</dt><dd id="pRole"></dd></dl>
+    </section>
+
+    <form class="card" id="coForm" novalidate data-vendor><h2>업체 정보</h2>
+      <div class="field has-btn"><input name="bizNo" placeholder=" " readonly><label>사업자등록번호</label><button type="button" class="btn btn-sm inline-btn" id="bizEdit">변경</button><span class="msg"></span><span class="ok" id="bizOk">✔ 국세청 재조회 완료</span></div>
+      <div class="field"><input name="company" placeholder=" "><label>업체명</label><span class="msg"></span></div>
+      <div class="row"><div class="field"><input name="ceo" placeholder=" "><label>대표자명</label><span class="msg"></span></div>
+      <div class="field"><select name="bizType"><option value="">선택</option><option>식품</option><option>생활용품</option><option>전자기기</option><option>뷰티</option><option>의류</option><option>기타</option></select><label>업종</label><span class="msg"></span></div></div>
+      <div class="actions"><button class="btn btn-primary" type="submit">업체정보 저장</button></div>
+    </form>
+
+    <form class="card" id="mgForm" novalidate><h2>담당자 정보</h2>
+      <div class="field"><input name="mName" placeholder=" "><label>담당자명</label><span class="msg"></span></div>
+      <div class="field"><input name="email" type="email" placeholder=" "><label>이메일</label><span class="msg"></span></div>
+      <div class="field has-btn"><input name="phone" inputmode="numeric" placeholder=" "><label>휴대폰 번호</label><button type="button" class="btn btn-sm inline-btn" id="sendCode" hidden>재인증</button><span class="msg"></span><span class="ok">✔ 재인증 완료</span></div>
+      <div class="field has-btn" id="codeRow" hidden><input name="code" inputmode="numeric" maxlength="6" placeholder=" "><label>인증번호 6자리 <span class="timer" id="timer"></span></label><button type="button" class="btn btn-sm inline-btn" id="verifyCode">확인</button><span class="msg"></span></div>
+      <p class="hint" id="phoneHint" hidden>휴대폰 번호를 바꾸면 SMS 재인증이 필요합니다.</p>
+      <div class="actions"><button class="btn btn-primary" type="submit">담당자정보 저장</button></div>
+    </form>
+
+    <form class="card" id="pwForm" novalidate><h2>비밀번호 변경</h2>
+      <div class="field"><input name="cur" type="password" placeholder=" " autocomplete="current-password"><label>현재 비밀번호</label><button type="button" class="eye" aria-label="비밀번호 표시">👁️</button><span class="msg"></span></div>
+      <div class="field"><input name="password" type="password" placeholder=" " autocomplete="new-password"><label>새 비밀번호</label><button type="button" class="eye" aria-label="비밀번호 표시">👁️</button><span class="msg"></span></div>
+      <div class="meter"><i></i><i></i><i></i><i></i></div><div class="meter-text">8자 이상, 영문+숫자 조합</div>
+      <div class="field"><input name="password2" type="password" placeholder=" " autocomplete="new-password"><label>새 비밀번호 확인</label><span class="msg"></span></div>
+      <div class="actions"><button class="btn btn-primary" type="submit">비밀번호 변경</button></div>
+    </form>
+
+    <form class="card" id="agForm"><h2>수신동의</h2>
+      <div class="toggle-row line"><div><b>이메일</b><br><small style="color:var(--muted)">공지·승인 결과 안내</small></div><label class="switch"><input type="checkbox" name="email"><i></i></label></div>
+      <div class="toggle-row line"><div><b>SMS</b><br><small style="color:var(--muted)">승인/반려 문자</small></div><label class="switch"><input type="checkbox" name="sms"><i></i></label></div>
+      <div class="toggle-row line"><div><b>알림톡</b><br><small style="color:var(--muted)">카카오 알림톡</small></div><label class="switch"><input type="checkbox" name="talk"><i></i></label></div>
+      <div class="actions"><button class="btn btn-primary" type="submit">수신동의 저장</button></div>
+    </form>
+  </div>
+</main>
+<script src="js/common.js"></script><script src="js/profile.js"></script>
+</body></html>

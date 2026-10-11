@@ -9,28 +9,49 @@
 <body>
 <button class="btn btn-sm btn-ghost theme-fab" data-theme-toggle type="button"></button>
 <div class="auth">
-  <aside class="auth-hero"><div class="logo"><b>S</b> SCM</div><div><h2>데이터를 연결하고,<br>업무를 더 스마트하게.</h2><p>상품·재고·커뮤니티를 하나의 워크스페이스에서 관리하세요.</p></div><small>© 2026 SCM Sample</small></aside>
-  <main class="auth-main">
-    <section class="auth-card">
-      <h1>계정 만들기 ✨</h1>
-      <p class="sub">1분이면 가입할 수 있어요. <span id="stepLabel"></span></p>
-      <div class="steps"><span></span><span></span></div>
+  <aside class="auth-hero"><div class="logo"><b>S</b> SCM</div><div><h2>데이터를 연결하고,<br>업무를 더 스마트하게.</h2><p>외부 업체 BP·상품 등록을 하나의 워크스페이스에서 관리하세요.</p></div><small>© 2026 SCM Sample</small></aside>
+  <main class="auth-main" style="align-items:flex-start;padding-top:56px">
+    <section class="auth-card" style="max-width:460px">
+      <h1>업체 회원가입 ✨</h1>
+      <p class="sub">관리자 승인 후 이용할 수 있어요. <span id="stepLabel"></span></p>
+      <div class="steps"><span></span><span></span><span></span><span></span></div>
       <form id="signupForm" novalidate>
+        <!-- 1. 계정 -->
         <div class="pane">
-          <div class="field"><input name="name" placeholder=" " autocomplete="name"><label>이름</label><span class="msg"></span></div>
-          <div class="field"><input name="email" type="email" placeholder=" " autocomplete="email"><label>이메일</label><span class="msg"></span></div>
+          <div class="field has-btn"><input name="loginId" placeholder=" " autocomplete="username" autocapitalize="none" maxlength="20"><label>아이디 (영문 소문자·숫자 4~20자)</label><button type="button" class="btn btn-sm inline-btn" id="idCheck">중복확인</button><span class="msg"></span><span class="ok">✔ 사용 가능한 아이디입니다.</span></div>
           <div class="field"><input name="password" type="password" placeholder=" " autocomplete="new-password"><label>비밀번호</label><button type="button" class="eye" aria-label="비밀번호 표시">👁️</button><span class="msg"></span></div>
           <div class="meter"><i></i><i></i><i></i><i></i></div><div class="meter-text">8자 이상, 영문+숫자 조합</div>
           <div class="field"><input name="password2" type="password" placeholder=" " autocomplete="new-password"><label>비밀번호 확인</label><span class="msg"></span></div>
-          <button class="btn btn-primary btn-block" type="button" id="toStep2">다음</button>
+          <button class="btn btn-primary btn-block" type="button" data-next>다음</button>
         </div>
+        <!-- 2. 업체 정보 -->
         <div class="pane" hidden>
-          <div class="field"><input name="phone" inputmode="numeric" placeholder=" " autocomplete="tel"><label>휴대폰 (선택)</label><span class="msg"></span></div>
+          <div class="field has-btn"><input name="bizNo" inputmode="numeric" placeholder=" "><label>사업자등록번호</label><button type="button" class="btn btn-sm inline-btn" id="bizCheck">조회</button><span class="msg"></span><span class="ok" id="bizOk">✔ 국세청 조회 완료</span></div>
+          <p class="hint">데모: 체크섬이 맞는 번호만 통과합니다. 예) 111-22-23339</p>
+          <div class="field"><input name="company" placeholder=" "><label>업체명</label><span class="msg"></span></div>
+          <div class="row"><div class="field"><input name="ceo" placeholder=" "><label>대표자명</label><span class="msg"></span></div>
+          <div class="field"><select name="bizType"><option value="">선택</option><option>식품</option><option>생활용품</option><option>전자기기</option><option>뷰티</option><option>의류</option><option>기타</option></select><label>업종</label><span class="msg"></span></div></div>
+          <div class="row"><button class="btn" type="button" data-prev>이전</button><button class="btn btn-primary" type="button" data-next>다음</button></div>
+        </div>
+        <!-- 3. 담당자 + 본인인증 -->
+        <div class="pane" hidden>
+          <div class="field"><input name="mName" placeholder=" " autocomplete="name"><label>담당자명</label><span class="msg"></span></div>
+          <div class="field"><input name="email" type="email" placeholder=" " autocomplete="email"><label>담당자 이메일</label><span class="msg"></span></div>
+          <div class="field has-btn"><input name="phone" inputmode="numeric" placeholder=" " autocomplete="tel"><label>휴대폰 번호</label><button type="button" class="btn btn-sm inline-btn" id="sendCode">인증요청</button><span class="msg"></span><span class="ok">✔ 본인인증이 완료되었습니다.</span></div>
+          <div class="field has-btn" id="codeRow" hidden><input name="code" inputmode="numeric" maxlength="6" placeholder=" "><label>인증번호 6자리 <span class="timer" id="timer"></span></label><button type="button" class="btn btn-sm inline-btn" id="verifyCode">확인</button><span class="msg"></span></div>
+          <p class="hint">2차 인증(공동인증서 등)이 필요하면 이 단계에 추가됩니다.</p>
+          <div class="row"><button class="btn" type="button" data-prev>이전</button><button class="btn btn-primary" type="button" data-next>다음</button></div>
+        </div>
+        <!-- 4. 서류 + 약관 -->
+        <div class="pane" hidden>
+          <div class="upload" data-doc="bizLicense"><b>사업자등록증 <small style="color:var(--danger)">(필수)</small></b><button class="btn btn-sm" type="button">파일 선택</button><input type="file" accept=".pdf,image/*" hidden><span class="fname">PDF·JPG·PNG, 5MB 이하</span></div>
+          <div class="upload" data-doc="bankbook"><b>통장사본 <small style="color:var(--muted)">(선택)</small></b><button class="btn btn-sm" type="button">파일 선택</button><input type="file" accept=".pdf,image/*" hidden><span class="fname">PDF·JPG·PNG, 5MB 이하</span></div>
           <label class="check"><input type="checkbox" id="agreeAll"> <b>전체 동의</b></label>
           <label class="check"><input type="checkbox" class="agree" required> [필수] 이용약관 동의</label>
           <label class="check"><input type="checkbox" class="agree" required> [필수] 개인정보 수집·이용 동의</label>
-          <label class="check"><input type="checkbox" class="agree"> [선택] 마케팅 정보 수신 동의</label>
-          <div class="row" style="margin-top:14px"><button class="btn" type="button" id="toStep1">이전</button><button class="btn btn-primary" type="submit">가입하기</button></div>
+          <label class="check"><input type="checkbox" class="agree" name="agEmail"> [선택] 이메일 수신 동의</label>
+          <label class="check"><input type="checkbox" class="agree" name="agSms"> [선택] SMS·알림톡 수신 동의</label>
+          <div class="row" style="margin-top:14px"><button class="btn" type="button" data-prev>이전</button><button class="btn btn-primary" type="submit">가입 신청</button></div>
         </div>
       </form>
       <p class="foot">이미 계정이 있나요? <a href="login.html">로그인</a></p>
