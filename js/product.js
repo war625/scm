@@ -75,6 +75,12 @@
     e.preventDefault();
     if (!checks.map(c => c()).every(Boolean)) { toast('필수 항목을 확인해주세요.', 'error'); return $('.invalid input, .invalid select, .invalid textarea')?.focus(); }
     if (!images.length) return toast('대표 이미지를 1장 이상 등록해주세요.', 'error');
+    const norm = s => s.trim().toLowerCase();
+    if ((await Api.products()).some(x => norm(x.name) === norm(f.name.value))) {
+      const w = f.name.closest('.field'); w.classList.add('invalid'); w.classList.remove('valid');
+      w.querySelector('.msg').textContent = '이미 등록된 상품명입니다.';
+      return toast('이미 등록된 상품명입니다.', 'error');
+    }
     const btn = $('button[type=submit]', f); setLoading(btn, true, '등록 중...');
     await Api.addProduct(data()); saved = true; localStorage.removeItem('productDraft');
     toast('상품이 등록되었습니다 🎉'); setLoading(btn, false);
