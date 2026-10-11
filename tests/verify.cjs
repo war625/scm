@@ -53,6 +53,18 @@ const srv = http.createServer((q, r) => {
     return saved && saved.discount === 90 ? null : `저장된 할인율이 ${saved ? saved.discount : '(저장 안 됨)'} (기대 90)`;
   });
 
+  await test('R5', '같은 이미지(파일명+크기) 중복 업로드 거부 + 안내, 다른 파일은 허용', async () => {
+    await open();
+    const up = n => page.setInputFiles('#files', { name: n, mimeType: 'image/png', buffer: PNG });
+    await up('dup.png'); await page.waitForTimeout(200);
+    await up('dup.png'); await page.waitForTimeout(300);
+    const c = await page.locator('.thumb').count(); if (c !== 1) return `같은 파일 2회 업로드 후 썸네일 ${c}개 (기대 1)`;
+    const t = await page.locator('#toasts .toast.error').allInnerTexts();
+    if (!t.some(x => x.includes('이미'))) return `'이미' 가 포함된 오류 토스트 없음 (현재: ${JSON.stringify(t)})`;
+    await up('other.png'); await page.waitForTimeout(300);
+    const c2 = await page.locator('.thumb').count(); return c2 === 2 ? null : `다른 파일명 업로드 후 썸네일 ${c2}개 (기대 2)`;
+  });
+
   await browser.close(); srv.close();
   for (const [id, ok, d, m] of results) console.log(`${ok ? 'PASS' : 'FAIL'} ${id} ${d}${ok ? '' : '  → ' + m}`);
   process.exit(results.every(r => r[1]) ? 0 : 1);
