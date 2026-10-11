@@ -6,7 +6,7 @@
   // ---------- 로그인 ----------
   const lf = $('#loginForm');
   if (lf) {
-    const roleHome = r => (r === 'admin' ? 'admin-members.html' : 'board.html');
+    const roleHome = r => (r === 'admin' ? 'admin-approvals.html' : 'bp-list.html');
     const err = $('#loginErr');
     if (params.get('joined')) $('#joined').hidden = false;
     const savedId = localStorage.getItem('savedId');
